@@ -1,0 +1,40 @@
+name: Compilar EmociGat Limpio
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configurar JDK Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Compilar APK con Herramientas de Android
+      run: |
+        echo "Creando estructura profesional..."
+        mkdir -p app/src/main/java/com/inversionespro/emocigat
+        mkdir -p app/src/main/assets
+        
+        # Buscar y mover archivos Java si ya los subiste
+        find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/inversionespro/emocigat/ \;
+        [ -f AndroidManifest.xml ] && cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+        [ -f emociones.json ] && cp emociones.json app/src/main/assets/emociones.json
+        
+        echo "include ':app'" > settings.gradle
+        
+        printf "plugins {\n    id 'com.android.application' version '8.2.0' apply false\n}\n" > build.gradle
+        
+        printf "plugins {\n    id 'com.android.application'\n}\nandroid {\n    namespace 'com.inversionespro.emocigat'\n    compileSdk 34\n    defaultConfig {\n        applicationId 'com.inversionespro.emocigat'\n        minSdk 24\n        targetSdk 34\n    }\n}\ndependencies {\n    implementation 'androidx.appcompat:appcompat:1.6.1'\n}\n" > app/build.gradle
+        
+        gradle assembleDebug
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: EmociGat-APK-Final
+        path: app/build/outputs/apk/debug/app-debug.apk
+        
