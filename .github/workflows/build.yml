@@ -20,7 +20,6 @@ jobs:
         mkdir -p app/src/main/java/com/inversionespro/emocigat
         mkdir -p app/src/main/assets
         
-        # Buscar y mover archivos Java si ya los subiste
         find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/inversionespro/emocigat/ \;
         [ -f AndroidManifest.xml ] && cp AndroidManifest.xml app/src/main/AndroidManifest.xml
         [ -f emociones.json ] && cp emociones.json app/src/main/assets/emociones.json
